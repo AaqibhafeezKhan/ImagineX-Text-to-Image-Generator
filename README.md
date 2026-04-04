@@ -1,10 +1,9 @@
-# 🎨 ImagineX - AI Text-to-Image Generator
+#  ImagineX - AI Text-to-Image Generator
 
-![Demo Screenshot Placeholder](https://via.placeholder.com/1200x600?text=ImagineX+AI+Generation)
 
 ImagineX is a premium, high-performance web application that transforms your textual descriptions into stunning visual masterpieces using state-of-the-art AI models. Built with **React** and powered by the **Hugging Face Inference API**, ImagineX offers a seamless, glassmorphic interface designed to inspire creativity.
 
-## ✨ Key Features
+##  Key Features
 
 -   **AI-Powered Generation**: Leverages Stable Diffusion v1.5 for high-quality image generation.
 -   **Premium Glassmorphic UI**: Beautiful, modern design with smooth animations and gradients.
@@ -13,7 +12,7 @@ ImagineX is a premium, high-performance web application that transforms your tex
 -   **Fully Responsive**: Optimised for desktops, tablets, and mobile devices.
 -   **Real-time Feedback**: Live loading states and error handling for a smooth user experience.
 
-## 🚀 Getting Started
+##  Getting Started
 
 To get started with ImagineX locally, follow these steps:
 
@@ -45,7 +44,7 @@ To get started with ImagineX locally, follow these steps:
 
 4.  Enter your Hugging Face API token in the application settings (⚙️ icon) and start generating!
 
-## 🛠️ Deployment
+##  Deployment
 
 This project is fully ready to be deployed to **GitHub Pages**, **Vercel**, or **Netlify**.
 
@@ -72,10 +71,10 @@ This project is fully ready to be deployed to **GitHub Pages**, **Vercel**, or *
     npm run deploy
     ```
 
-## 🔒 Privacy & Security
+##  Privacy & Security
 
 ImagineX is a client-side application. Your prompts and API tokens are never sent to our servers; they only interact directly with the Hugging Face API. Your token is stored locally in your browser's `localStorage` for your convenience.
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License.
