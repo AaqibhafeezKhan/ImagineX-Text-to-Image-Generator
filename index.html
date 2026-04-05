@@ -3,436 +3,833 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="ImagineX - Professional AI Text-to-Image generation powered by Hugging Face Stable Diffusion models." />
-  <meta name="theme-color" content="#0f172a" />
-  <title>ImagineX - AI Text to Image</title>
+  <meta name="description" content="ImagineX - AI Text-to-Image generation powered by Hugging Face." />
+  <title>ImagineX</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── TOKENS ─────────────────────────────────────── */
+    :root {
+      --bg:        #0a0a0a;
+      --surface:   #111111;
+      --border:    #222222;
+      --border-hi: #333333;
+      --text:      #e8e8e8;
+      --muted:     #666666;
+      --accent:    #7c6af7;
+      --accent-hi: #9d8fff;
+      --danger:    #ef4444;
+      --danger-bg: rgba(239,68,68,.08);
+      --radius:    8px;
+    }
+
+    /* ─── RESET ──────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── LAYOUT ─────────────────────────────────────── */
+    .shell {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ─── HEADER ─────────────────────────────────────── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 32px 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 40px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    .brand-name {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      color: var(--text);
+    }
+
+    .brand-tagline {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    /* ─── SETTINGS BUTTON ────────────────────────────── */
+    .settings-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      transition: border-color .15s, color .15s;
+    }
+    .settings-btn:hover { border-color: var(--border-hi); color: var(--text); }
+    .settings-btn.active { border-color: var(--accent); color: var(--accent); }
+
+    /* ─── GRID ───────────────────────────────────────── */
+    .grid {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+    @media (max-width: 700px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    /* ─── PANEL (left column) ────────────────────────── */
+    .panel { display: flex; flex-direction: column; gap: 24px; }
+
+    /* ─── API CONFIG ─────────────────────────────────── */
+    .api-config {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+    .api-config h3 {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .api-config input {
+      width: 100%;
+      padding: 9px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      outline: none;
+      transition: border-color .15s;
+    }
+    .api-config input:focus { border-color: var(--accent); }
+    .api-config .hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+    .api-config .hint a { color: var(--accent); text-decoration: none; }
+    .api-config .hint a:hover { text-decoration: underline; }
+
+    /* ─── MODEL SECTION ──────────────────────────────── */
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .model-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .model-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color .15s, background .15s;
+    }
+    .model-btn:hover { border-color: var(--border-hi); background: #161616; }
+    .model-btn.active {
+      border-color: var(--accent);
+      background: rgba(124,106,247,.07);
+      color: var(--accent-hi);
+    }
+    .model-btn .model-name { font-weight: 500; }
+    .model-btn .model-tag {
+      font-size: 11px;
+      color: var(--muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .model-btn.active .model-tag {
+      border-color: rgba(124,106,247,.3);
+      color: var(--accent);
+      background: rgba(124,106,247,.1);
+    }
+
+    /* ─── FORM ───────────────────────────────────────── */
+    .prompt-section {}
+    .prompt-section label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .prompt-section textarea {
+      width: 100%;
+      min-height: 110px;
+      padding: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      resize: vertical;
+      outline: none;
+      transition: border-color .15s;
+      line-height: 1.6;
+    }
+    .prompt-section textarea:focus { border-color: var(--accent); }
+    .prompt-section textarea::placeholder { color: #3d3d3d; }
+
+    .gen-btn {
+      margin-top: 12px;
+      width: 100%;
+      padding: 11px;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      color: #fff;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background .15s, opacity .15s;
+    }
+    .gen-btn:hover:not(:disabled) { background: var(--accent-hi); }
+    .gen-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+    /* ─── ERROR ──────────────────────────────────────── */
+    .error-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 12px 14px;
+      background: var(--danger-bg);
+      border: 1px solid rgba(239,68,68,.2);
+      border-radius: var(--radius);
+      color: #f87171;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .error-box svg { flex-shrink: 0; margin-top: 1px; }
+
+    /* ─── OUTPUT ─────────────────────────────────────── */
+    .output {
+      min-height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* placeholder */
+    .placeholder {
+      text-align: center;
+      padding: 40px;
+    }
+    .placeholder-ring {
+      width: 56px;
+      height: 56px;
+      border: 1px solid var(--border-hi);
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .placeholder h3 {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .placeholder p { font-size: 13px; color: var(--muted); }
+
+    /* loading */
+    .loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 40px;
+    }
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--border-hi);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    .loader p { font-size: 13px; color: var(--muted); }
+
+    /* result */
+    .result { width: 100%; }
+    .result img {
+      width: 100%;
+      display: block;
+    }
+    .result-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+    }
+    .result-model { font-size: 12px; color: var(--muted); }
+    .result-actions { display: flex; gap: 8px; }
+    .icon-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      font: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      transition: border-color .15s, color .15s;
+    }
+    .icon-btn:hover { border-color: var(--border-hi); color: var(--text); }
+    .icon-btn.primary {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .icon-btn.primary:hover { background: rgba(124,106,247,.1); }
+
+    /* ─── HISTORY ────────────────────────────────────── */
+    .history-section {
+      margin-top: 56px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .history-header h2 { font-size: 14px; font-weight: 500; color: var(--text); }
+    .clear-btn {
+      font: inherit;
+      font-size: 12px;
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .clear-btn:hover { color: var(--danger); }
+    .history-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .history-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color .15s;
+    }
+    .history-card:hover { border-color: var(--border-hi); }
+    .history-card img { width: 100%; height: 120px; object-fit: cover; display: block; }
+    .history-info { padding: 10px 12px; }
+    .history-prompt {
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+    .history-model-tag { font-size: 11px; color: var(--muted); }
+
+    /* ─── FOOTER ─────────────────────────────────────── */
+    footer {
+      margin-top: 56px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: #333;
+      text-align: center;
+    }
+
+    /* ─── ANIMATIONS ──────────────────────────────────── */
+    @keyframes spin   { to { transform: rotate(360deg); } }
+    @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    .fadein { animation: fadein .3s ease; }
+
+    /* ─── SPINNER INLINE ─────────────────────────────── */
+    .spin-inline {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      flex-shrink: 0;
+    }
+  </style>
 </head>
 <body>
+<div class="shell">
 
-  <div class="App" id="app">
-
-    <!-- HEADER -->
-    <header>
-      <div class="logo-container">
-        <div class="logo-icon"></div>
-        <h1>ImagineX</h1>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <div>
+        <div class="brand-name">ImagineX</div>
+        <div class="brand-tagline">AI Text-to-Image</div>
       </div>
-      <p class="subtitle">Professional-grade AI generation at your fingertips.</p>
-    </header>
-
-    <!-- TOOLBAR -->
-    <div class="toolbar">
-      <button id="settings-toggle-btn" class="toolbar-btn" title="Settings">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-        </svg>
-        Settings
-      </button>
     </div>
+    <button id="settings-btn" class="settings-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+      Settings
+    </button>
+  </header>
 
-    <!-- MAIN -->
-    <main class="main-container">
+  <!-- MAIN GRID -->
+  <div class="grid">
 
-      <!-- INPUT SECTION -->
-      <div class="input-section">
+    <!-- LEFT PANEL -->
+    <div class="panel">
 
-        <!-- API KEY CONFIG (hidden by default if token exists) -->
-        <div id="api-key-config" class="api-key-config animate-slide-down" style="display:none;">
-          <h3>Hugging Face Configuration</h3>
-          <div class="input-wrapper">
-            <input
-              id="api-key-input"
-              type="password"
-              placeholder="hf_..."
-            />
-          </div>
-          <p class="helper-text">
-            Your token is stored locally for session persistence.
-            <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noreferrer">Get one here.</a>
-          </p>
-        </div>
+      <!-- API Config (hidden by default if token found) -->
+      <div id="api-config" class="api-config" style="display:none;">
+        <h3>Hugging Face Token</h3>
+        <input id="api-input" type="password" placeholder="hf_..." autocomplete="off" />
+        <p class="hint">Stored locally in your browser. <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noreferrer">Get a token →</a></p>
+      </div>
 
-        <!-- MODEL SELECTION -->
-        <div class="model-selection animate-fade-in">
-          <label>Select AI Model</label>
-          <div class="model-grid" id="model-grid"></div>
-        </div>
+      <!-- Model Selection -->
+      <div class="model-section">
+        <p class="section-label">Model</p>
+        <div class="model-list" id="model-list"></div>
+      </div>
 
-        <!-- PROMPT FORM -->
-        <form id="prompt-form" class="prompt-form">
-          <div class="input-group">
-            <label for="prompt">Enter Visionary Prompt</label>
-            <textarea
-              id="prompt"
-              placeholder="A digital painting of a cosmic lighthouse at the edge of the universe, vibrant colors, cinematic lighting, 8k..."
-              required
-            ></textarea>
-          </div>
-
-          <button type="submit" id="generate-btn" class="generate-btn" disabled>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-            </svg>
-            Generate Masterpiece
-          </button>
-        </form>
-
-        <!-- ERROR BADGE -->
-        <div id="error-badge" class="error-badge animate-shake" style="display:none;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      <!-- Prompt + Generate -->
+      <div class="prompt-section">
+        <label for="prompt">Prompt</label>
+        <textarea id="prompt" placeholder="A misty mountain at dawn, oil painting, soft light..."></textarea>
+        <button id="gen-btn" class="gen-btn" disabled>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
           </svg>
-          <span id="error-text"></span>
+          Generate
+        </button>
+      </div>
+
+      <!-- Error -->
+      <div id="error-box" class="error-box" style="display:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span id="error-text"></span>
+      </div>
+
+    </div><!-- /panel -->
+
+    <!-- OUTPUT -->
+    <div class="output" id="output">
+
+      <div id="placeholder" class="placeholder">
+        <div class="placeholder-ring">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
         </div>
+        <h3>Ready to generate</h3>
+        <p>Enter a prompt and click Generate.</p>
+      </div>
 
-      </div><!-- /input-section -->
+      <div id="loader" class="loader" style="display:none;">
+        <div class="spinner"></div>
+        <p>Generating your image…</p>
+      </div>
 
-      <!-- OUTPUT SECTION -->
-      <div class="output-section" id="output-section">
-
-        <!-- Placeholder -->
-        <div id="placeholder" class="placeholder-text animate-fade-in">
-          <div class="placeholder-orb"></div>
-          <h3>Ready to Imagine</h3>
-          <p>Type your prompt and witness the power of Stable Diffusion.</p>
-        </div>
-
-        <!-- Loading -->
-        <div id="loading-state" class="loading-state" style="display:none;">
-          <div class="processing-indicator"></div>
-          <p>Dreaming of your masterpiece...</p>
-          <div class="status-progress">
-            <div class="status-line"></div>
-          </div>
-        </div>
-
-        <!-- Result -->
-        <div id="result-container" class="result-container animate-scale-up" style="display:none;">
-          <div class="image-wrapper">
-            <img id="result-image" src="" alt="" class="result-image" />
-            <div class="image-meta">
-              <span id="result-model-name"></span>
-            </div>
-          </div>
-          <div class="image-actions">
-            <button id="download-btn" class="action-btn download-primary">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <div id="result" class="result fadein" style="display:none;">
+        <img id="result-img" src="" alt="" />
+        <div class="result-bar">
+          <span id="result-model" class="result-model"></span>
+          <div class="result-actions">
+            <button id="download-btn" class="icon-btn primary">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="7 10 12 15 17 10"></polyline>
                 <line x1="12" y1="15" x2="12" y2="3"></line>
               </svg>
-              Save Image
+              Save
             </button>
-            <button id="new-prompt-btn" class="action-btn">New Prompt</button>
+            <button id="new-btn" class="icon-btn">New</button>
           </div>
         </div>
-
-      </div><!-- /output-section -->
-
-    </main>
-
-    <!-- HISTORY SECTION -->
-    <section id="history-section" class="history-section animate-slide-up" style="display:none;">
-      <div class="history-header">
-        <h2>Recent Creations</h2>
-        <button id="clear-history-btn" class="clear-history">Clear All</button>
       </div>
-      <div class="history-grid" id="history-grid"></div>
-    </section>
 
-    <!-- FOOTER -->
-    <footer>
-      <p>&copy; 2026 ImagineX AI. Integrated with Hugging Face Inference Infrastructure.</p>
-    </footer>
+    </div><!-- /output -->
+  </div><!-- /grid -->
 
-  </div><!-- /App -->
+  <!-- HISTORY -->
+  <section id="history-section" class="history-section" style="display:none;">
+    <div class="history-header">
+      <h2>History</h2>
+      <button id="clear-btn" class="clear-btn">Clear all</button>
+    </div>
+    <div class="history-grid" id="history-grid"></div>
+  </section>
 
-  <script>
-    // ─── CONFIG ─────────────────────────────────────────────────────────────────
-    const MODELS = [
-      { id: "runwayml/stable-diffusion-v1-5",            name: "Stable Diffusion v1.5", type: "General"       },
-      { id: "stabilityai/stable-diffusion-2-1",          name: "Stable Diffusion v2.1", type: "High Res"      },
-      { id: "prompthero/openjourney",                    name: "OpenJourney",           type: "Artistic"      },
-      { id: "SG161222/Realistic_Vision_V5.1_noVAE",      name: "Realistic Vision",      type: "Photorealistic"},
-      { id: "dreamlike-art/dreamlike-diffusion-1.0",     name: "Dreamlike",             type: "Fantasy"       },
-    ];
+  <footer>
+    &copy; 2026 ImagineX · Powered by Hugging Face Inference API
+  </footer>
 
-    const BASE_MODEL_URL = "https://api-inference.huggingface.co/models/";
+</div><!-- /shell -->
 
-    // ─── STATE ───────────────────────────────────────────────────────────────────
-    let selectedModel = MODELS[0].id;
-    let currentImageUrl = null;
-    let currentPrompt  = "";
-    let history = [];
-    let apiKey  = "";
-    let showSettings = false;
+<script>
+  // ─── ENV TOKEN ───────────────────────────────────────────────────────────────
+  // Pre-seeded from .env — users can override via Settings
+  const ENV_TOKEN = "";
 
-    // ─── DOM REFS ────────────────────────────────────────────────────────────────
-    const settingsToggleBtn = document.getElementById("settings-toggle-btn");
-    const apiKeyConfig      = document.getElementById("api-key-config");
-    const apiKeyInput       = document.getElementById("api-key-input");
-    const modelGrid         = document.getElementById("model-grid");
-    const promptForm        = document.getElementById("prompt-form");
-    const promptTextarea    = document.getElementById("prompt");
-    const generateBtn       = document.getElementById("generate-btn");
-    const errorBadge        = document.getElementById("error-badge");
-    const errorText         = document.getElementById("error-text");
-    const placeholder       = document.getElementById("placeholder");
-    const loadingState      = document.getElementById("loading-state");
-    const resultContainer   = document.getElementById("result-container");
-    const resultImage       = document.getElementById("result-image");
-    const resultModelName   = document.getElementById("result-model-name");
-    const downloadBtn       = document.getElementById("download-btn");
-    const newPromptBtn      = document.getElementById("new-prompt-btn");
-    const historySection    = document.getElementById("history-section");
-    const historyGrid       = document.getElementById("history-grid");
-    const clearHistoryBtn   = document.getElementById("clear-history-btn");
+  // ─── MODELS ──────────────────────────────────────────────────────────────────
+  // Only models confirmed available on HF free serverless inference
+  const MODELS = [
+    { id: "stabilityai/stable-diffusion-2-1",          name: "Stable Diffusion 2.1",  tag: "General"       },
+    { id: "stabilityai/stable-diffusion-xl-base-1.0",  name: "SDXL Base",             tag: "High Res"      },
+    { id: "prompthero/openjourney",                    name: "OpenJourney",            tag: "Artistic"      },
+    { id: "dreamlike-art/dreamlike-diffusion-1.0",     name: "Dreamlike",              tag: "Fantasy"       },
+    { id: "CompVis/stable-diffusion-v1-4",             name: "Stable Diffusion 1.4",  tag: "Classic"       },
+  ];
 
-    // ─── INIT ────────────────────────────────────────────────────────────────────
-    function init() {
-      // load persisted data
-      apiKey  = localStorage.getItem("hf_api_token") || "";
-      history = JSON.parse(localStorage.getItem("imaginex_history") || "[]");
+  // ─── STATE ───────────────────────────────────────────────────────────────────
+  let selectedModel   = MODELS[0].id;
+  let currentImageUrl = null;
+  let currentPrompt   = "";
+  let history         = [];
+  let apiKey          = "";
+  let settingsOpen    = false;
 
-      // show settings panel if no token
-      showSettings = !apiKey;
-      apiKeyInput.value = apiKey;
-      applySettingsVisibility();
+  // ─── ELEMENTS ────────────────────────────────────────────────────────────────
+  const $ = id => document.getElementById(id);
+  const settingsBtn  = $("settings-btn");
+  const apiConfig    = $("api-config");
+  const apiInput     = $("api-input");
+  const modelList    = $("model-list");
+  const promptEl     = $("prompt");
+  const genBtn       = $("gen-btn");
+  const errorBox     = $("error-box");
+  const errorText    = $("error-text");
+  const placeholder  = $("placeholder");
+  const loader       = $("loader");
+  const result       = $("result");
+  const resultImg    = $("result-img");
+  const resultModel  = $("result-model");
+  const downloadBtn  = $("download-btn");
+  const newBtn       = $("new-btn");
+  const historySection = $("history-section");
+  const historyGrid  = $("history-grid");
+  const clearBtn     = $("clear-btn");
 
-      // build model cards
-      renderModelGrid();
+  // ─── INIT ────────────────────────────────────────────────────────────────────
+  function init() {
+    apiKey  = localStorage.getItem("hf_token") || ENV_TOKEN;
+    history = JSON.parse(localStorage.getItem("ix_history") || "[]");
 
-      // render history
-      renderHistory();
+    if (apiKey) localStorage.setItem("hf_token", apiKey);
 
-      // enable/disable generate button based on textarea
-      syncGenerateBtn();
-    }
+    apiInput.value = apiKey;
+    settingsOpen   = !apiKey;
+    applySettings();
 
-    // ─── SETTINGS TOGGLE ────────────────────────────────────────────────────────
-    settingsToggleBtn.addEventListener("click", () => {
-      showSettings = !showSettings;
-      applySettingsVisibility();
-    });
+    buildModels();
+    renderHistory();
+    syncBtn();
+  }
 
-    function applySettingsVisibility() {
-      if (showSettings) {
-        apiKeyConfig.style.display = "block";
-        settingsToggleBtn.classList.add("active");
-      } else {
-        apiKeyConfig.style.display = "none";
-        settingsToggleBtn.classList.remove("active");
-      }
-    }
+  // ─── SETTINGS ────────────────────────────────────────────────────────────────
+  settingsBtn.addEventListener("click", () => {
+    settingsOpen = !settingsOpen;
+    applySettings();
+  });
 
-    // persist API key as user types
-    apiKeyInput.addEventListener("input", () => {
-      apiKey = apiKeyInput.value.trim();
-      if (apiKey) localStorage.setItem("hf_api_token", apiKey);
-      syncGenerateBtn();
-    });
+  function applySettings() {
+    apiConfig.style.display = settingsOpen ? "block" : "none";
+    settingsBtn.classList.toggle("active", settingsOpen);
+  }
 
-    // ─── MODEL GRID ──────────────────────────────────────────────────────────────
-    function renderModelGrid() {
-      modelGrid.innerHTML = "";
-      MODELS.forEach(model => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "model-card" + (model.id === selectedModel ? " active" : "");
-        btn.innerHTML = `<span class="model-name">${model.name}</span><span class="model-type">${model.type}</span>`;
-        btn.addEventListener("click", () => {
-          selectedModel = model.id;
-          renderModelGrid();
-        });
-        modelGrid.appendChild(btn);
+  apiInput.addEventListener("input", () => {
+    apiKey = apiInput.value.trim();
+    localStorage.setItem("hf_token", apiKey);
+    syncBtn();
+  });
+
+  // ─── MODELS ──────────────────────────────────────────────────────────────────
+  function buildModels() {
+    modelList.innerHTML = "";
+    MODELS.forEach(m => {
+      const btn = document.createElement("button");
+      btn.className = "model-btn" + (m.id === selectedModel ? " active" : "");
+      btn.type = "button";
+      btn.innerHTML = `<span class="model-name">${m.name}</span><span class="model-tag">${m.tag}</span>`;
+      btn.addEventListener("click", () => {
+        selectedModel = m.id;
+        buildModels();
       });
-    }
-
-    // ─── PROMPT TEXTAREA ────────────────────────────────────────────────────────
-    promptTextarea.addEventListener("input", () => {
-      currentPrompt = promptTextarea.value.trim();
-      syncGenerateBtn();
+      modelList.appendChild(btn);
     });
+  }
 
-    function syncGenerateBtn() {
-      const hasPrompt = promptTextarea.value.trim().length > 0;
-      generateBtn.disabled = !hasPrompt;
-    }
+  // ─── PROMPT SYNC ─────────────────────────────────────────────────────────────
+  promptEl.addEventListener("input", syncBtn);
+  function syncBtn() {
+    genBtn.disabled = !(promptEl.value.trim() && apiKey);
+  }
 
-    // ─── GENERATE ────────────────────────────────────────────────────────────────
-    promptForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      currentPrompt = promptTextarea.value.trim();
+  // ─── GENERATE ────────────────────────────────────────────────────────────────
+  document.getElementById("gen-btn").closest("button") || genBtn;
+  promptEl.closest("form") || promptEl.addEventListener("keydown", e => {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) generate();
+  });
 
-      if (!currentPrompt) return;
+  genBtn.addEventListener("click", generate);
 
-      if (!apiKey) {
-        showError("Please provide a Hugging Face API Token in settings.");
-        showSettings = true;
-        applySettingsVisibility();
-        return;
-      }
+  async function generate() {
+    currentPrompt = promptEl.value.trim();
+    if (!currentPrompt || !apiKey) return;
 
-      setLoading(true);
-      hideError();
-      showPlaceholder(false);
-      showResult(false);
+    setLoading(true);
+    hideError();
+    show(placeholder, false);
+    show(result, false);
 
-      try {
-        const response = await fetch(`${BASE_MODEL_URL}${selectedModel}`, {
+    try {
+      const res = await fetch(
+        `https://api-inference.huggingface.co/models/${selectedModel}`,
+        {
           method: "POST",
           headers: {
             "Authorization": `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
+            "Content-Type":  "application/json",
+            "x-use-cache":   "false",
           },
-          body: JSON.stringify({ inputs: currentPrompt }),
-        });
-
-        if (!response.ok) {
-          if (response.status === 401) throw new Error("401");
-          if (response.status === 503) throw new Error("503");
-          throw new Error("generic");
+          body: JSON.stringify({
+            inputs: currentPrompt,
+            parameters: { num_inference_steps: 30 },
+          }),
         }
+      );
 
-        const blob    = await response.blob();
-        const imageUrl = URL.createObjectURL(blob);
-        currentImageUrl = imageUrl;
+      // surface detailed errors from the API
+      if (!res.ok) {
+        let detail = `HTTP ${res.status}`;
+        try {
+          const ct = res.headers.get("content-type") || "";
+          if (ct.includes("application/json")) {
+            const j = await res.json();
+            detail = j.error || j.message || detail;
+          } else {
+            const t = await res.text();
+            if (t) detail = t.substring(0, 200);
+          }
+        } catch {}
 
-        // show result
-        const modelName = MODELS.find(m => m.id === selectedModel)?.name || "Unknown";
-        resultImage.src       = imageUrl;
-        resultImage.alt       = currentPrompt;
-        resultModelName.textContent = modelName;
-        showResult(true);
-
-        // save to history
-        const newItem = {
-          id:        Date.now(),
-          url:       imageUrl,
-          prompt:    currentPrompt,
-          model:     modelName,
-          timestamp: new Date().toLocaleTimeString(),
-        };
-        history = [newItem, ...history].slice(0, 10);
-        localStorage.setItem("imaginex_history", JSON.stringify(history));
-        renderHistory();
-
-      } catch (err) {
-        const msg = err.message === "401"
-          ? "Invalid API Token. Please check your token and try again."
-          : err.message === "503"
-          ? "Model is loading. Please try again in 5–10 seconds."
-          : "An error occurred while generating the image.";
-        showError(msg);
-        showPlaceholder(true);
-      } finally {
-        setLoading(false);
+        if (res.status === 401 || res.status === 403) {
+          throw new Error("Invalid or expired token. Open Settings and paste a valid Hugging Face token.");
+        }
+        if (res.status === 503) {
+          throw new Error("Model is loading — please wait 10–20 seconds and try again.");
+        }
+        if (res.status === 422) {
+          throw new Error(`Validation error: ${detail}`);
+        }
+        throw new Error(detail);
       }
-    });
 
-    // ─── DOWNLOAD ────────────────────────────────────────────────────────────────
-    downloadBtn.addEventListener("click", () => {
-      if (!currentImageUrl) return;
-      const link      = document.createElement("a");
-      link.href       = currentImageUrl;
-      link.download   = `imaginex-${currentPrompt.substring(0, 20).replace(/\s+/g, "-")}-${Date.now()}.jpg`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    });
+      const contentType = res.headers.get("content-type") || "";
 
-    // ─── NEW PROMPT ──────────────────────────────────────────────────────────────
-    newPromptBtn.addEventListener("click", () => {
-      showResult(false);
-      showPlaceholder(true);
-      currentImageUrl = null;
-    });
-
-    // ─── CLEAR HISTORY ───────────────────────────────────────────────────────────
-    clearHistoryBtn.addEventListener("click", () => {
-      if (window.confirm("Are you sure you want to clear your generation history?")) {
-        history = [];
-        localStorage.removeItem("imaginex_history");
-        renderHistory();
+      // Some models return JSON with base64 instead of a raw blob
+      let imageUrl;
+      if (contentType.includes("application/json")) {
+        const json = await res.json();
+        // Handle array of objects with generated_image or base64
+        const entry = Array.isArray(json) ? json[0] : json;
+        const b64   = entry?.generated_image || entry?.image || entry?.output;
+        if (!b64) throw new Error(`Unexpected JSON response: ${JSON.stringify(entry).substring(0, 200)}`);
+        imageUrl = `data:image/jpeg;base64,${b64}`;
+      } else {
+        const blob = await res.blob();
+        imageUrl   = URL.createObjectURL(blob);
       }
-    });
 
-    // ─── RENDER HISTORY ──────────────────────────────────────────────────────────
-    function renderHistory() {
-      if (history.length === 0) {
-        historySection.style.display = "none";
-        return;
+      currentImageUrl = imageUrl;
+
+      const modelName = MODELS.find(m => m.id === selectedModel)?.name || selectedModel;
+      resultImg.src           = imageUrl;
+      resultImg.alt           = currentPrompt;
+      resultModel.textContent = `Generated with ${modelName}`;
+      show(result, true);
+
+      // save history
+      history = [{ id: Date.now(), url: imageUrl, prompt: currentPrompt, model: modelName }, ...history].slice(0, 12);
+      localStorage.setItem("ix_history", JSON.stringify(history));
+      renderHistory();
+
+    } catch (err) {
+      let msg = err.message || "Unknown error occurred.";
+      // Distinguish a true network failure from an API error
+      if (msg === "Failed to fetch" || msg.toLowerCase().includes("networkerror") || msg.toLowerCase().includes("load failed")) {
+        msg = "Could not reach Hugging Face API. This can happen if:\n• The model requires a paid HF subscription\n• Your network is blocking the request\n• Try a different model";
       }
-      historySection.style.display = "block";
-      historyGrid.innerHTML = "";
-      history.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "history-card";
-        card.innerHTML = `
-          <img src="${item.url}" alt="${item.prompt}" />
-          <div class="history-info">
-            <p class="history-prompt">${item.prompt}</p>
-            <p class="history-model">${item.model}</p>
-          </div>`;
-        card.addEventListener("click", () => {
-          currentImageUrl = item.url;
-          currentPrompt   = item.prompt;
-          promptTextarea.value    = item.prompt;
-          resultImage.src         = item.url;
-          resultImage.alt         = item.prompt;
-          resultModelName.textContent = item.model;
-          syncGenerateBtn();
-          hideError();
-          showPlaceholder(false);
-          setLoading(false);
-          showResult(true);
-        });
-        historyGrid.appendChild(card);
+      showError(msg);
+      show(placeholder, true);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ─── DOWNLOAD ────────────────────────────────────────────────────────────────
+  downloadBtn.addEventListener("click", () => {
+    if (!currentImageUrl) return;
+    const a    = document.createElement("a");
+    a.href     = currentImageUrl;
+    a.download = `imaginex-${Date.now()}.jpg`;
+    a.click();
+  });
+
+  // ─── NEW ─────────────────────────────────────────────────────────────────────
+  newBtn.addEventListener("click", () => {
+    show(result, false);
+    show(placeholder, true);
+    currentImageUrl = null;
+  });
+
+  // ─── CLEAR HISTORY ───────────────────────────────────────────────────────────
+  clearBtn.addEventListener("click", () => {
+    if (!confirm("Clear all history?")) return;
+    history = [];
+    localStorage.removeItem("ix_history");
+    renderHistory();
+  });
+
+  // ─── RENDER HISTORY ──────────────────────────────────────────────────────────
+  function renderHistory() {
+    historySection.style.display = history.length ? "block" : "none";
+    historyGrid.innerHTML = "";
+    history.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "history-card";
+      card.innerHTML = `
+        <img src="${item.url}" alt="${item.prompt}" />
+        <div class="history-info">
+          <p class="history-prompt">${item.prompt}</p>
+          <p class="history-model-tag">${item.model}</p>
+        </div>`;
+      card.addEventListener("click", () => {
+        currentImageUrl         = item.url;
+        currentPrompt           = item.prompt;
+        promptEl.value          = item.prompt;
+        resultImg.src           = item.url;
+        resultImg.alt           = item.prompt;
+        resultModel.textContent = `Generated with ${item.model}`;
+        hideError();
+        show(placeholder, false);
+        show(loader, false);
+        show(result, true);
+        syncBtn();
       });
-    }
+      historyGrid.appendChild(card);
+    });
+  }
 
-    // ─── UI HELPERS ──────────────────────────────────────────────────────────────
-    function setLoading(isLoading) {
-      loadingState.style.display  = isLoading ? "flex" : "none";
-      generateBtn.disabled        = isLoading || !promptTextarea.value.trim();
+  // ─── HELPERS ─────────────────────────────────────────────────────────────────
+  function setLoading(on) {
+    show(loader, on);
+    genBtn.disabled  = on;
+    genBtn.innerHTML = on
+      ? `<div class="spin-inline"></div> Generating…`
+      : `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> Generate`;
+    if (!on) syncBtn();
+  }
 
-      // swap button content
-      generateBtn.innerHTML = isLoading
-        ? `<div class="loading-spinner-inline"></div>`
-        : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>Generate Masterpiece`;
-    }
+  function show(el, visible) {
+    el.style.display = visible ? "" : "none";
+  }
 
-    function showPlaceholder(visible) {
-      placeholder.style.display = visible ? "flex" : "none";
-    }
+  function showError(msg) {
+    errorText.textContent    = msg;
+    errorBox.style.display   = "flex";
+  }
 
-    function showResult(visible) {
-      resultContainer.style.display = visible ? "block" : "none";
-    }
+  function hideError() {
+    errorBox.style.display = "none";
+  }
 
-    function showError(msg) {
-      errorText.textContent    = msg;
-      errorBadge.style.display = "flex";
-      // re-trigger shake animation
-      errorBadge.classList.remove("animate-shake");
-      void errorBadge.offsetWidth;
-      errorBadge.classList.add("animate-shake");
-    }
-
-    function hideError() {
-      errorBadge.style.display = "none";
-    }
-
-    // ─── BOOT ────────────────────────────────────────────────────────────────────
-    init();
-  </script>
-
+  // ─── BOOT ────────────────────────────────────────────────────────────────────
+  init();
+</script>
 </body>
 </html>
