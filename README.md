@@ -1,80 +1,65 @@
-#  ImagineX - AI Text-to-Image Generator
+# ImagineX - AI Text-to-Image Generator
 
+A clean, fast web app for generating AI images from text prompts. Powered by Pollinations.AI - no API key required. Features multiple models (Flux, Turbo, SDXL), generation history, and one-click downloads.
 
-ImagineX is a premium, high-performance web application that transforms your textual descriptions into stunning visual masterpieces using state-of-the-art AI models. Built with **React** and powered by the **Hugging Face Inference API**, ImagineX offers a seamless, glassmorphic interface designed to inspire creativity.
+ImagineX is a lightweight, browser-based text-to-image generator that lets you create AI artwork instantly. Built with vanilla JavaScript and powered by Pollinations.AI's free inference API.
 
-##  Key Features
+## Key Features
 
--   **AI-Powered Generation**: Leverages Stable Diffusion v1.5 for high-quality image generation.
--   **Premium Glassmorphic UI**: Beautiful, modern design with smooth animations and gradients.
--   **One-Click Download**: Instantly save your generated masterpieces to your device.
--   **API Key Management**: Securely manage your Hugging Face API token with client-side persistence.
--   **Fully Responsive**: Optimised for desktops, tablets, and mobile devices.
--   **Real-time Feedback**: Live loading states and error handling for a smooth user experience.
+- No signup or API key needed
+- Multiple AI models (Flux, Turbo, SDXL)
+- Local storage for generation history
+- One-click image downloads
+- Clean, responsive UI
+- Works on any device with a browser
+- AI-Powered Generation using state-of-the-art diffusion models
+- Premium UI with smooth animations
+- Fully Responsive for desktop, tablet, and mobile
+- Real-time Feedback with live loading states
 
-##  Getting Started
+## Getting Started
 
 To get started with ImagineX locally, follow these steps:
 
 ### Prerequisites
 
--   **Node.js**: Ensure you have Node.js installed.
--   **Hugging Face API Token**: You'll need a free API token from Hugging Face.
-    1.  Create an account at [huggingface.co](https://huggingface.co/join).
-    2.  Go to [Settings -> Tokens](https://huggingface.co/settings/tokens).
-    3.  Create a new token with "Read" access.
+- Any modern web browser
+- A local web server (optional, for development)
 
 ### Installation
 
-1.  Clone the repository:
+1. Clone the repository:
     ```bash
-    git clone https://github.com/your-username/text-to-image.git
-    cd text-to-image
+    git clone https://github.com/AaqibhafeezKhan/ImagineX-Text-to-Image-Generator.git
+    cd ImagineX-Text-to-Image-Generator
     ```
 
-2.  Install dependencies:
+2. Open `index.html` directly in your browser, or run a local server:
     ```bash
-    npm install
+    python -m http.server 8080
     ```
+    Then visit `http://localhost:8080`
 
-3.  Start the development server:
-    ```bash
-    npm start
-    ```
+3. Start generating images immediately - no API key needed!
 
-4.  Enter your Hugging Face API token in the application settings (⚙️ icon) and start generating!
+## Deployment
 
-##  Deployment
-
-This project is fully ready to be deployed to **GitHub Pages**, **Vercel**, or **Netlify**.
+This project can be deployed to any static hosting service.
 
 ### Deploying to GitHub Pages
 
-1.  Install the `gh-pages` package:
-    ```bash
-    npm install gh-pages --save-dev
-    ```
+1. Enable GitHub Pages in your repository settings
+2. Set the source to your main branch
+3. Your site will be available at `https://your-username.github.io/ImagineX-Text-to-Image-Generator`
 
-2.  Add `homepage` to `package.json`:
-    ```json
-    "homepage": "https://your-username.github.io/text-to-image"
-    ```
+### Deploying to Vercel or Netlify
 
-3.  Add the following scripts:
-    ```json
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
-    ```
+Simply drag and drop the project folder, or connect your GitHub repository for automatic deployments.
 
-4.  Run the deploy command:
-    ```bash
-    npm run deploy
-    ```
+## Privacy & Security
 
-##  Privacy & Security
+ImagineX is a fully client-side application. Your prompts are sent directly to Pollinations.AI's API - no data passes through our servers. Generation history is stored locally in your browser's localStorage and never leaves your device.
 
-ImagineX is a client-side application. Your prompts and API tokens are never sent to our servers; they only interact directly with the Hugging Face API. Your token is stored locally in your browser's `localStorage` for your convenience.
-
-##  License
+## License
 
 This project is licensed under the MIT License.
