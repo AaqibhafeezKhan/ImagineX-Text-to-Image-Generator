@@ -10,7 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
   <style>
-    /* ─── TOKENS ─────────────────────────────────────── */
     :root {
       --bg:        #0a0a0a;
       --surface:   #111111;
@@ -25,7 +24,6 @@
       --radius:    8px;
     }
 
-    /* ─── RESET ──────────────────────────────────────── */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
@@ -38,14 +36,12 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ─── LAYOUT ─────────────────────────────────────── */
     .shell {
       max-width: 960px;
       margin: 0 auto;
       padding: 0 24px 80px;
     }
 
-    /* ─── HEADER ─────────────────────────────────────── */
     .header {
       display: flex;
       align-items: center;
@@ -82,7 +78,6 @@
       font-weight: 400;
     }
 
-    /* ─── SETTINGS BUTTON ────────────────────────────── */
     .settings-btn {
       display: flex;
       align-items: center;
@@ -100,7 +95,6 @@
     .settings-btn:hover { border-color: var(--border-hi); color: var(--text); }
     .settings-btn.active { border-color: var(--accent); color: var(--accent); }
 
-    /* ─── GRID ───────────────────────────────────────── */
     .grid {
       display: grid;
       grid-template-columns: 380px 1fr;
@@ -111,10 +105,8 @@
       .grid { grid-template-columns: 1fr; }
     }
 
-    /* ─── PANEL (left column) ────────────────────────── */
     .panel { display: flex; flex-direction: column; gap: 24px; }
 
-    /* ─── API CONFIG ─────────────────────────────────── */
     .api-config {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -150,7 +142,6 @@
     .api-config .hint a { color: var(--accent); text-decoration: none; }
     .api-config .hint a:hover { text-decoration: underline; }
 
-    /* ─── MODEL SECTION ──────────────────────────────── */
     .section-label {
       font-size: 11px;
       font-weight: 500;
@@ -202,7 +193,6 @@
       background: rgba(124,106,247,.1);
     }
 
-    /* ─── FORM ───────────────────────────────────────── */
     .prompt-section {}
     .prompt-section label {
       display: block;
@@ -252,7 +242,6 @@
     .gen-btn:hover:not(:disabled) { background: var(--accent-hi); }
     .gen-btn:disabled { opacity: .35; cursor: not-allowed; }
 
-    /* ─── ERROR ──────────────────────────────────────── */
     .error-box {
       display: flex;
       align-items: flex-start;
@@ -267,7 +256,6 @@
     }
     .error-box svg { flex-shrink: 0; margin-top: 1px; }
 
-    /* ─── OUTPUT ─────────────────────────────────────── */
     .output {
       min-height: 420px;
       display: flex;
@@ -280,7 +268,6 @@
       overflow: hidden;
     }
 
-    /* placeholder */
     .placeholder {
       text-align: center;
       padding: 40px;
@@ -303,7 +290,6 @@
     }
     .placeholder p { font-size: 13px; color: var(--muted); }
 
-    /* loading */
     .loader {
       display: flex;
       flex-direction: column;
@@ -321,7 +307,6 @@
     }
     .loader p { font-size: 13px; color: var(--muted); }
 
-    /* result */
     .result { width: 100%; }
     .result img {
       width: 100%;
@@ -357,7 +342,6 @@
     }
     .icon-btn.primary:hover { background: rgba(124,106,247,.1); }
 
-    /* ─── HISTORY ────────────────────────────────────── */
     .history-section {
       margin-top: 56px;
       padding-top: 32px;
@@ -404,7 +388,6 @@
     }
     .history-model-tag { font-size: 11px; color: var(--muted); }
 
-    /* ─── FOOTER ─────────────────────────────────────── */
     footer {
       margin-top: 56px;
       padding-top: 24px;
@@ -414,12 +397,10 @@
       text-align: center;
     }
 
-    /* ─── ANIMATIONS ──────────────────────────────────── */
     @keyframes spin   { to { transform: rotate(360deg); } }
     @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
     .fadein { animation: fadein .3s ease; }
 
-    /* ─── SPINNER INLINE ─────────────────────────────── */
     .spin-inline {
       width: 16px; height: 16px;
       border: 2px solid rgba(255,255,255,.3);
